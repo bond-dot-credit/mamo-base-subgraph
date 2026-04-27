@@ -1,0 +1,53 @@
+specVersion: 1.0.0
+indexerHints:
+  prune: auto
+features:
+  - traces
+
+schema:
+  file: ./schema.graphql
+
+dataSources:
+  - kind: ethereum
+    name: Factory
+    network: base
+    source:
+      address: "0x1Eeb3FD8C8302dAf6BC265a6B8a5C397d89DE286"
+      abi: Factory
+      startBlock: 0
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - MamoUser
+      abis:
+        - name: Factory
+          file: ./abis/Factory.json
+      blockHandlers:
+        - handler: handleFactoryTraces
+          filter:
+            kind: call
+      file: ./src/mapping.ts
+
+  - kind: ethereum/contract
+    name: USDC
+    network: base
+    source:
+      address: "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913"
+      abi: ERC20
+      startBlock: 0
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - DailyFlow
+        - MamoUser
+      abis:
+        - name: ERC20
+          file: ./abis/ERC20.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleUSDCTransfer
+      file: ./src/mapping.ts
